@@ -1,4 +1,4 @@
-const VERSION = "v1";
+const VERSION = "v2";
 const STATIC = `wxq-static-${VERSION}`;
 const IMG = `wxq-img-${VERSION}`;
 const DATA = `wxq-data-${VERSION}`;
@@ -27,7 +27,7 @@ async function networkFirst(req, name, timeoutMs){
   const cache = await caches.open(name);
   try{
     const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), timeoutMs);
-    const res = await fetch(req, {signal: ctl.signal});
+    const res = await fetch(req, {signal: ctl.signal, cache: "no-cache"});
     clearTimeout(t);
     if (res && res.ok) cache.put(req, res.clone());
     return res;
