@@ -91,6 +91,11 @@
       .replace(/\n/g, "<br>");
   }
 
+  let mirror = {};
+  const L = u => (u && mirror[u]) || u;
+  const imgAttrs = u => { const l = L(u); return `src="${esc(l)}"` + (l !== u ? ` onerror="this.onerror=null;this.src='${esc(u)}'"` : ""); };
+  window.wxqL = L;
+
   const data = {};
   const state = {nav:1, row:{}, id:{}, cur:{}, q:""};
   try{ const s = JSON.parse(localStorage.getItem("wxq-cards")||"{}"); if (NAVS.some(n=>n.nav===s.nav)) state.nav = s.nav; }catch(e){}
@@ -111,7 +116,6 @@
       <div class="cards-right" id="cardsRight"></div>
     </div>
     <div class="cards-note" id="cardsNote"></div>
-    <div class="cards-src">数据与图片来自 <a href="https://wxq.qq.com/cp/a20260707sfgw/index.html#page4" target="_blank" rel="noopener">王者万象棋官网</a>,页面加载时实时读取</div>
     <div class="cards-lightbox" id="cardsLightbox"><img alt=""><p></p></div>`;
 
   const lb = $("#cardsLightbox");
@@ -140,7 +144,7 @@
       if (n.nav === state.nav) continue;
       const list = data[n.key] || [];
       if (list[0]) urls.push(list[0].cardImage);
-      for (const c of list) urls.push(n.nav===1 ? `${ICON}/icon/hero_${c.id}.png` : (c.thumb||c.image));
+      for (const c of list) urls.push(L(n.nav===1 ? `${ICON}/icon/hero_${c.id}.png` : (c.thumb||c.image)));
     }
     window.wxqPrefetch(urls);
   }
@@ -150,7 +154,8 @@
     return fetch(url, {signal:ctl.signal, cache:"no-cache"}).then(r=>{ if(!r.ok) throw new Error(r.status); return r.json(); }).finally(()=>clearTimeout(t));
   }
   function load(){
-    return Promise.all([1,2,4,8].map(n => fetchJSON(`${OFFICIAL}_${n}.js`)))
+    return fetchJSON("data/mirror.json", 6000).then(m => { mirror = m || {}; window.wxqMirror = mirror; }).catch(()=>{}).then(() =>
+    Promise.all([1,2,4,8].map(n => fetchJSON(`${OFFICIAL}_${n}.js`))))
       .then(parts => { for (const p of parts) for (const k of Object.keys(p)) if (Array.isArray(p[k]) && p[k].length) data[k] = (data[k]||[]).concat(p[k]); })
       .catch(err => fetchJSON(SNAPSHOT, 15000).then(s => {
         for (const n of NAVS) data[n.key] = s[n.key]||[];
@@ -162,9 +167,15 @@
   function cards(){ return data[navInfo().key]||[]; }
   function byId(id){ return cards().find(c=>c.id===id); }
   function listImg(c, nav){
-    if (nav===1) return `<img class="li-hero" loading="lazy" src="${ICON}/icon/hero_${c.id}.png" alt="" onerror="this.onerror=null;this.src='${esc(c.thumb||c.image)}'">`;
+    if (nav===1){
+      const u = `${ICON}/icon/hero_${c.id}.png`, l = L(u), fb = esc(c.thumb||c.image);
+      const chain = l !== u ? `this.src='${esc(u)}';this.onerror=function(){this.onerror=null;this.src='${fb}'}` : `this.onerror=null;this.src='${fb}'`;
+      return `<img class="li-hero" loading="lazy" src="${esc(l)}" alt="" onerror="${chain}">`;
+    }
     const cls = "li-hero" + (nav===2 ? " tf_bg"+c.quality : "");
-    return `<img class="${cls}" loading="lazy" src="${esc(c.thumb||c.image)}" alt="" onerror="this.onerror=null;this.src='img/card/cards-default.png'">`;
+    const u = c.thumb||c.image, l = L(u);
+    const chain = l !== u ? `this.src='${esc(u)}';this.onerror=function(){this.onerror=null;this.src='img/card/cards-default.png'}` : `this.onerror=null;this.src='img/card/cards-default.png'`;
+    return `<img class="${cls}" loading="lazy" src="${esc(l)}" alt="" onerror="${chain}">`;
   }
   function qualityIcon(c, nav){ return (nav===1||nav===4) ? `<img class="li-icon" src="img/card/quality/${c.quality}.png" alt="">` : ""; }
   function item(c, nav){
@@ -238,7 +249,7 @@
   }
   function sources(c){
     if (c.sourceCards && c.sourceCards.length){
-      return `<h2>相关</h2><div class="cards-r-descimg">${c.sourceCards.map(s => `<a class="${SHAPE_BY_TYPE[s.type]||"desc-img"}" data-img="${esc(s.cardImage)}" data-name="${esc(s.name)}" title="${esc(s.name)}"><img src="${esc(s.thumb||s.image)}" alt="" onerror="this.onerror=null;this.src='img/card/cards-default.png'"></a>`).join("")}</div>`;
+      return `<h2>相关</h2><div class="cards-r-descimg">${c.sourceCards.map(s => `<a class="${SHAPE_BY_TYPE[s.type]||"desc-img"}" data-img="${esc(s.cardImage)}" data-name="${esc(s.name)}" title="${esc(s.name)}"><img ${imgAttrs(s.thumb||s.image)} alt=""></a>`).join("")}</div>`;
     }
     return `<h2>相关</h2><div class="cards-r-desc">${esc(c.cardGetDesc||"")}</div>`;
   }

@@ -12,13 +12,15 @@
     .replace(/&lt;a href=\d+&gt;/gi, '<span class="kw">').replace(/&lt;\/a&gt;/gi, "</span>")
     .replace(/&lt;(\/?b)&gt;/gi, "<$1>").replace(/\n/g, "<br>");
 
+  const L = u => (u && window.wxqMirror && window.wxqMirror[u]) || u;
+  const imgAttrs = (u, fb) => { const l = L(u); return `src="${esc(l)}" onerror="${l !== u ? `this.src='${esc(u)}';this.onerror=function(){this.onerror=null;this.src='${fb}'}` : `this.onerror=null;this.src='${fb}'`}"`; };
+
   const root = $("#roles");
   root.innerHTML = `
     <div class="roles-head"><b>棋手图鉴</b><small>LORDS</small></div>
     <div class="roles-nav" id="rolesNav"><div class="rp-empty">正在加载棋手数据…</div></div>
     <div class="roles-body" id="rolesBody"></div>
-    <div class="roles-note" id="rolesNote"></div>
-    <div class="roles-src">数据与图片来自 <a href="https://wxq.qq.com/cp/a20260707sfgw/index.html#page3" target="_blank" rel="noopener">王者万象棋官网</a>,页面加载时实时读取</div>`;
+    <div class="roles-note" id="rolesNote"></div>`;
 
   const state = {cur:null, talent:0, card:0, more:false};
   let lords = [], cms = {};
@@ -44,10 +46,10 @@
 
   function renderNav(){
     $("#rolesNav").innerHTML = lords.map(l =>
-      `<a data-id="${l.lordId}" class="${l.lordId===state.cur?"on":""}"><i><img src="${esc(l.avatar||l.icon)}" alt="" onerror="this.onerror=null;this.src='${DEFAULT_ICON}'"></i>${esc(l.name)}</a>`).join("");
+      `<a data-id="${l.lordId}" class="${l.lordId===state.cur?"on":""}"><i><img ${imgAttrs(l.avatar||l.icon, DEFAULT_ICON)} alt=""></i>${esc(l.name)}</a>`).join("");
   }
   function navIcons(list, idx, cls){
-    return list.map((x,i) => `<a data-i="${i}" class="${i===idx?"on":""}${cls?" "+cls:""}"><i><img src="${esc(x.icon||x.thumb||"")}" alt="" onerror="this.onerror=null;this.src='${DEFAULT_ICON}'"></i>${esc(x.name)}</a>`).join("");
+    return list.map((x,i) => `<a data-i="${i}" class="${i===idx?"on":""}${cls?" "+cls:""}"><i><img ${imgAttrs(x.icon||x.thumb||"", DEFAULT_ICON)} alt=""></i>${esc(x.name)}</a>`).join("");
   }
   function info(card){
     if (!card) return `<div class="rp-empty">暂无数据</div>`;
@@ -69,7 +71,7 @@
     const visible = showMore ? related.slice(0, MAX) : related;
     $("#rolesBody").innerHTML = `
       <div class="roles-portrait">
-        <img class="rp-img" src="${esc(l.banShenImg||l.portrait||l.icon)}" alt="" onerror="this.onerror=null;this.src='${esc(l.portrait||l.icon)}'">
+        <img class="rp-img" ${imgAttrs(l.banShenImg||l.portrait||l.icon, esc(l.portrait||l.icon))} alt="">
         <h3>${esc(l.name)}</h3>${en ? `<div class="rp-en">${esc(en)}</div>` : ""}
         ${line ? `<div class="rp-line">${esc(line)}</div>` : ""}
         ${voice ? `<a class="rp-voice" data-voice="${esc(voice)}">▶ 听台词</a>` : ""}
@@ -113,13 +115,14 @@
     audio.play().catch(()=>{ el.classList.remove("playing"); audio = null; });
   }
 
-  load().then(() => {
+  const mirrorReady = window.wxqMirror ? Promise.resolve() : fetch("data/mirror.json").then(r=>r.json()).then(m=>{ if(!window.wxqMirror) window.wxqMirror = m; }).catch(()=>{});
+  Promise.all([load(), mirrorReady]).then(() => {
     if (!lords.length){ $("#rolesNav").innerHTML = '<div class="rp-empty">没有棋手数据</div>'; return; }
     state.cur = lords[0].lordId;
     render();
     if (window.wxqPrefetch){
       const urls = [];
-      for (const l of lords){ urls.push(l.banShenImg||l.portrait); for (const t of l.talent||[]) urls.push(t.icon); }
+      for (const l of lords){ urls.push(L(l.banShenImg||l.portrait)); for (const t of l.talent||[]) urls.push(L(t.icon)); }
       window.wxqPrefetch(urls.filter(Boolean));
     }
   }).catch(err => { $("#rolesNav").innerHTML = `<div class="rp-empty">棋手数据加载失败:${esc(err.message)}</div>`; });
