@@ -23,7 +23,7 @@
 }
 .cards-title small{display:block;margin-top:0.375em;font-size:0.6875em;letter-spacing:.3em;color:#8fa4d9;font-weight:600}
 .cards-search{
-  display:flex;align-items:center;height:2.25em;width:100%;align-self:start;border-radius:1.125em;
+  display:flex;align-items:center;height:2.25em;width:100%;align-self:end;margin-bottom:0.375em;border-radius:1.125em;
   background:#1e2c4d7d;border:0.0625em solid rgba(160,180,255,.18);padding:0 0.375em 0 1em;
 }
 .cards-search input{flex:1;min-width:0;background:none;border:0;outline:0;color:#fff;font-size:0.9375em;font-family:inherit}
@@ -106,7 +106,7 @@
 .cards-xg .li-detail .li-hero{width:3.688em;height:3.688em;margin:0.125em auto 0;border-radius:0.375em}
 .cards-err{padding:2.5em 0;text-align:center;color:#f2f5ff;font-size:0.9375em}
 
-.cards-right{position:sticky;top:0.75em;padding-top:1.6em}
+.cards-right{position:sticky;top:0.75em;padding-top:3.4em}
 @media (max-width:900px){.cards-right{position:static}}
 .cards-r-tab{display:flex;justify-content:space-between;align-items:center;margin-bottom:2.4em;padding:0 0.375em}
 .cards-r-tab a{font-size:1.125em;color:#b8bccc;line-height:1}
