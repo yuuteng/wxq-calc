@@ -10,6 +10,7 @@
 <meta name="apple-mobile-web-app-title" content="万象棋">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Serif+SC:wght@600;700&display=swap">
+<link rel="stylesheet" href="cards.css">
 <style>
 :root{
   color-scheme:light dark;
@@ -61,7 +62,10 @@ h1{
   font-family:"Noto Serif SC","Songti SC","STSong",serif;
   font-weight:700;font-size:1.5rem;margin:0;letter-spacing:.02em;
 }
-header .hint{color:var(--ink-2);font-size:.9rem}
+.topnav{display:flex;gap:18px;font-size:.92rem}
+.topnav a{color:var(--ink-2);text-decoration:none;border-bottom:1px solid transparent}
+.topnav a:hover{color:var(--accent);border-color:var(--accent)}
+html{scroll-behavior:smooth}
 
 .calc{
   display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start;
@@ -141,10 +145,10 @@ tr.mark td:first-child::after{content:" 拍";color:var(--accent);font-size:.78re
 <div class="wrap">
   <header>
     <h1>万象棋升级计算器</h1>
-    <span class="hint">点弈星、等级、经验,下面直接读能量数</span>
+    <nav class="topnav"><a href="#calc">计算器</a><a href="#gallery">卡牌图鉴</a><a href="#rules">规则</a></nav>
   </header>
 
-  <section class="calc">
+  <section class="calc" id="calc">
     <div class="panel" id="panel">
       <div class="row">
         <div class="label">弈星</div>
@@ -167,8 +171,10 @@ tr.mark td:first-child::after{content:" 拍";color:var(--accent);font-size:.78re
     </div>
   </section>
 
+  <section class="cards-wrap" id="gallery"></section>
+
   <section class="ref">
-    <h2>规则</h2>
+    <h2 id="rules">规则</h2>
     <ul>
       <li>所需经验:1→2 = 7,2→3 = 13,3→4 = 17,4→5 = 23,5→6 = 27</li>
       <li>每回合 +1,每次拍卖 +2(一拍第 4 回合、二拍第 8、三拍第 12)</li>
@@ -337,5 +343,6 @@ tr.mark td:first-child::after{content:" 拍";color:var(--accent);font-size:.78re
   render();
 })();
 </script>
+<script src="cards.js" defer></script>
 </body>
 </html>
