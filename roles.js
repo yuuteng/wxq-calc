@@ -71,7 +71,7 @@
     const visible = showMore ? related.slice(0, MAX) : related;
     $("#rolesBody").innerHTML = `
       <div class="roles-portrait">
-        <img class="rp-img" ${imgAttrs(l.banShenImg||l.portrait||l.icon, esc(l.portrait||l.icon))} alt="">
+        <img class="rp-img" ${imgAttrs(l.portraitV2||l.banShenImg||l.icon, esc(l.banShenImg||l.icon))} alt="">
         <h3>${esc(l.name)}</h3>${en ? `<div class="rp-en">${esc(en)}</div>` : ""}
         ${line ? `<div class="rp-line">${esc(line)}</div>` : ""}
         ${voice ? `<a class="rp-voice" data-voice="${esc(voice)}">▶ 听台词</a>` : ""}
@@ -122,7 +122,7 @@
     render();
     if (window.wxqPrefetch){
       const urls = [];
-      for (const l of lords){ urls.push(L(l.banShenImg||l.portrait)); for (const t of l.talent||[]) urls.push(L(t.icon)); }
+      for (const l of lords){ urls.push(L(l.portraitV2||l.banShenImg)); for (const t of l.talent||[]) urls.push(L(t.icon)); }
       window.wxqPrefetch(urls.filter(Boolean));
     }
   }).catch(err => { $("#rolesNav").innerHTML = `<div class="rp-empty">棋手数据加载失败:${esc(err.message)}</div>`; });

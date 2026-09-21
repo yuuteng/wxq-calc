@@ -19,7 +19,7 @@ def wanted(snap):
             for s in c.get("sourceCards") or []:
                 urls.add(s.get("thumb") or s.get("image"))
     for l in snap.get("lords", []):
-        urls.add(l.get("avatar")); urls.add(l.get("banShenImg") or l.get("portrait"))
+        urls.add(l.get("avatar")); urls.add(l.get("portraitV2") or l.get("banShenImg"))
         for t in l.get("talent") or []:
             urls.add(t.get("icon"))
             for c in t.get("cards") or []:
