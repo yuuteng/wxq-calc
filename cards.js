@@ -134,14 +134,35 @@
   function navInfo(){ return NAVS.find(n=>n.nav===state.nav); }
   function cards(){ return data[navInfo().key]||[]; }
   function byId(id){ return cards().find(c=>c.id===id); }
-  function listImg(c){
-    if (state.nav===1) return `<img class="li-hero" loading="lazy" src="${ICON}/icon/hero_${c.id}.png" alt="" onerror="this.onerror=null;this.src='${esc(c.thumb||c.image)}'">`;
-    const cls = "li-hero" + (state.nav===2 ? " tf_bg"+c.quality : "");
+  function listImg(c, nav){
+    if (nav===1) return `<img class="li-hero" loading="lazy" src="${ICON}/icon/hero_${c.id}.png" alt="" onerror="this.onerror=null;this.src='${esc(c.thumb||c.image)}'">`;
+    const cls = "li-hero" + (nav===2 ? " tf_bg"+c.quality : "");
     return `<img class="${cls}" loading="lazy" src="${esc(c.thumb||c.image)}" alt="" onerror="this.onerror=null;this.src='img/card/cards-default.png'">`;
   }
-  function qualityIcon(c){ return (state.nav===1||state.nav===4) ? `<img class="li-icon" src="img/card/quality/${c.quality}.png" alt="">` : ""; }
-  function item(c){
-    return `<div class="li-detail${c.id===state.cur[state.nav]?" on":""}" data-id="${c.id}">${qualityIcon(c)}${listImg(c)}<p>${esc(c.name)}</p></div>`;
+  function qualityIcon(c, nav){ return (nav===1||nav===4) ? `<img class="li-icon" src="img/card/quality/${c.quality}.png" alt="">` : ""; }
+  function item(c, nav){
+    return `<div class="li-detail" data-id="${c.id}">${qualityIcon(c, nav)}${listImg(c, nav)}<p>${esc(c.name)}</p></div>`;
+  }
+  function group(title, iconName, mark, cardsHtml, gid){
+    return `<div class="cards-l-li"${gid!=null?` data-gid="${gid}"`:""}><div class="li-ti">${iconName ? `<img src="img/card/icon/${iconName}.png" alt="">` : ""}<p>${esc(title)}</p>${mark ? `<span>${esc(mark)}</span>` : ""}</div><div class="li-cards">${cardsHtml}</div></div>`;
+  }
+
+  // 每个 tab 的分组列表只建一次,之后切筛选只显示/隐藏,图片不重刷
+  const built = {};
+  function buildRows(nav){
+    if (built[nav]) return built[nav];
+    const all = data[NAVS.find(n=>n.nav===nav).key] || [];
+    const rows = {};
+    for (const cat of CATEGORIES[nav]){
+      const el = document.createElement("div");
+      el.className = "cards-rows";
+      el.innerHTML = cat.list.map(o => {
+        const grp = all.filter(c => cat.get(c).includes(o.id));
+        return grp.length ? group(o.name, o.icon, o.mark, grp.map(c => item(c, nav)).join(""), o.id) : "";
+      }).join("") || '<div class="cards-err">该分类下没有卡牌</div>';
+      rows[cat.row] = el;
+    }
+    return built[nav] = rows;
   }
 
   function renderTabs(){
@@ -157,28 +178,28 @@
         ${cat.list.map(o => `<a data-id="${o.id}" class="${cat.row===row && id===o.id ? "on":""}" title="${esc(o.mark||"")}">${o.name}</a>`).join("")}
       </div></div>`).join("");
   }
+  function markCurrent(){
+    const cur = state.cur[state.nav];
+    $("#cardsList").querySelectorAll(".li-detail").forEach(x => x.classList.toggle("on", +x.dataset.id===cur));
+  }
   function renderList(){
     const box = $("#cardsList");
     const all = cards();
     if (!all.length){ box.innerHTML = '<div class="cards-err">没有数据</div>'; return; }
-    let html = "";
     if (state.q){
       const hit = all.filter(c => c.name.includes(state.q));
-      html = hit.length
-        ? `<div class="cards-l-li"><div class="li-ti"><p>搜索「${esc(state.q)}」</p><span>${hit.length} 张</span></div><div class="li-cards">${hit.map(item).join("")}</div></div>`
+      box.innerHTML = hit.length
+        ? group(`搜索「${state.q}」`, null, `${hit.length} 张`, hit.map(c => item(c, state.nav)).join(""))
         : `<div class="cards-err">没有叫「${esc(state.q)}」的卡牌</div>`;
-    } else {
-      const cat = CATEGORIES[state.nav].find(c => c.row === (state.row[state.nav]||1));
-      const only = state.id[state.nav];
-      for (const o of cat.list){
-        if (only != null && o.id !== only) continue;
-        const grp = all.filter(c => cat.get(c).includes(o.id));
-        if (!grp.length) continue;
-        html += `<div class="cards-l-li"><div class="li-ti">${o.icon ? `<img src="img/card/icon/${o.icon}.png" alt="">` : ""}<p>${o.name}</p>${o.mark ? `<span>${esc(o.mark)}</span>` : ""}</div><div class="li-cards">${grp.map(item).join("")}</div></div>`;
-      }
-      if (!html) html = '<div class="cards-err">该分类下没有卡牌</div>';
+      markCurrent();
+      return;
     }
-    box.innerHTML = html;
+    const rowEl = buildRows(state.nav)[state.row[state.nav]||1];
+    const only = state.id[state.nav];
+    rowEl.querySelectorAll(".cards-l-li").forEach(g => { g.hidden = only != null && +g.dataset.gid !== only; });
+    if (box.firstChild !== rowEl){ box.replaceChildren(rowEl); }
+    box.scrollTop = 0;
+    markCurrent();
   }
 
   function big(imgs, names){
@@ -241,7 +262,7 @@
   $("#cardsList").addEventListener("click", e => {
     const d = e.target.closest(".li-detail"); if (!d) return;
     state.cur[state.nav] = +d.dataset.id;
-    $("#cardsList").querySelectorAll(".li-detail").forEach(x => x.classList.toggle("on", +x.dataset.id===state.cur[state.nav]));
+    markCurrent();
     renderDetail();
   });
   $("#cardsRight").addEventListener("click", e => {
