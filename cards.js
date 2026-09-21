@@ -104,10 +104,12 @@
   const root = $("#gallery");
   root.innerHTML = `
     <div class="cards-head">
-      <div class="cards-title"><b>卡牌图鉴</b><small>COMPENDIUM</small></div>
+      <div class="cards-head-l">
+        <div class="cards-title"><b>卡牌图鉴</b><small>COMPENDIUM</small></div>
+        <div class="card-tab" id="cardTabs">${NAVS.map(n=>`<a data-nav="${n.nav}" title="${n.name}">${n.name}</a>`).join("")}</div>
+      </div>
       <div class="cards-search"><input id="cardsSearch" type="search" placeholder="请输入你想搜索的卡牌名" autocomplete="off"><a id="cardsSearchBtn" aria-label="搜索"></a></div>
     </div>
-    <div class="card-tab" id="cardTabs">${NAVS.map(n=>`<a data-nav="${n.nav}" title="${n.name}">${n.name}</a>`).join("")}</div>
     <div class="cards-body">
       <div class="cards-left">
         <div class="cards-l-top" id="cardsFilters"></div>
