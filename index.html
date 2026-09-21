@@ -11,7 +11,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Serif+SC:wght@600;700&display=swap">
 <link rel="stylesheet" href="cards.css">
+<link rel="stylesheet" href="roles.css">
 <style>
+@font-face{font-family:"HYQiHei";src:url(fonts/HYQiHei-60S.ttf) format("truetype");font-weight:400;font-display:swap}
+@font-face{font-family:"HYQiHei";src:url(fonts/HYQiHei-75W.otf) format("opentype");font-weight:700;font-display:swap}
 :root{
   color-scheme:light dark;
   --bg:#EEF1EC;
@@ -146,7 +149,7 @@ tr.mark td:first-child::after{content:" 拍";color:var(--accent);font-size:.78re
 <div class="wrap">
   <header>
     <h1>万象棋升级计算器</h1>
-    <nav class="topnav"><a href="#calc">计算器</a><a href="#gallery">卡牌图鉴</a><a href="#rules">规则</a></nav>
+    <nav class="topnav"><a href="#calc">计算器</a><a href="#gallery">卡牌图鉴</a><a href="#roles">棋手</a><a href="#rules">规则</a></nav>
   </header>
 
   <section class="calc" id="calc">
@@ -173,6 +176,8 @@ tr.mark td:first-child::after{content:" 拍";color:var(--accent);font-size:.78re
   </section>
 
   <section class="cards-wrap" id="gallery"></section>
+
+  <section class="roles-wrap" id="roles"></section>
 
   <section class="ref">
     <h2 id="rules">规则</h2>
@@ -345,5 +350,6 @@ tr.mark td:first-child::after{content:" 拍";color:var(--accent);font-size:.78re
 })();
 </script>
 <script src="cards.js" defer></script>
+<script src="roles.js" defer></script>
 </body>
 </html>

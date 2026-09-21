@@ -117,6 +117,33 @@
   const lb = $("#cardsLightbox");
   lb.addEventListener("click", ()=> lb.classList.remove("on"));
   function lightbox(src, name){ $("img", lb).src = src; $("p", lb).textContent = name||""; lb.classList.add("on"); }
+  window.wxqLightbox = lightbox;
+
+  // 空闲时后台预取图片,切 tab 时直接命中缓存
+  const prefetchQ = []; let prefetching = 0; const seen = new Set();
+  const saveData = navigator.connection && navigator.connection.saveData;
+  function pump(){
+    while (prefetching < 4 && prefetchQ.length){
+      const u = prefetchQ.shift(); prefetching++;
+      const im = new Image(); im.onload = im.onerror = () => { prefetching--; pump(); }; im.src = u;
+    }
+  }
+  window.wxqPrefetch = function(urls){
+    if (saveData) return;
+    for (const u of urls) if (u && !seen.has(u)){ seen.add(u); prefetchQ.push(u); }
+    const start = () => pump();
+    if ("requestIdleCallback" in window) requestIdleCallback(start, {timeout:3000}); else setTimeout(start, 800);
+  };
+  function prefetchOtherTabs(){
+    const urls = [];
+    for (const n of NAVS){
+      if (n.nav === state.nav) continue;
+      const list = data[n.key] || [];
+      if (list[0]) urls.push(list[0].cardImage);
+      for (const c of list) urls.push(n.nav===1 ? `${ICON}/icon/hero_${c.id}.png` : (c.thumb||c.image));
+    }
+    window.wxqPrefetch(urls);
+  }
 
   function fetchJSON(url, ms){
     const ctl = new AbortController(); const t = setTimeout(()=>ctl.abort(), ms||8000);
@@ -292,5 +319,6 @@
   load().then(() => {
     for (const n of NAVS){ const l = data[n.key]||[]; if (l[0]) state.cur[n.nav] = l[0].id; }
     render();
+    setTimeout(prefetchOtherTabs, 1200);
   }).catch(err => { $("#cardsList").innerHTML = `<div class="cards-err">卡牌数据加载失败:${esc(err.message)}</div>`; });
 })();
