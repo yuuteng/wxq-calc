@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>万象棋升级计算器</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="万象棋">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Serif+SC:wght@600;700&display=swap">
+<style>
+:root{
+  color-scheme:light dark;
+  --bg:#EEF1EC;
+  --surface:#FFFFFF;
+  --surface-2:#E3E8E1;
+  --ink:#1B2320;
+  --ink-2:#5A665F;
+  --line:#CCD4CB;
+  --accent:#2E7D6B;
+  --accent-ink:#FFFFFF;
+  --accent-soft:#D6EBE4;
+  --star:#B7791F;
+  --star-soft:#F6E9CF;
+  --shadow:0 1px 2px rgba(27,35,32,.08),0 6px 20px rgba(27,35,32,.06);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#141A18;
+    --surface:#1E2624;
+    --surface-2:#273130;
+    --ink:#E6EBE8;
+    --ink-2:#9AA8A1;
+    --line:#354140;
+    --accent:#4FB39B;
+    --accent-ink:#0F1A17;
+    --accent-soft:#1F3D36;
+    --star:#E0A83A;
+    --star-soft:#3D3320;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.3);
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"IBM Plex Sans",-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  font-size:16px;
+  line-height:1.5;
+  padding-block:calc(16px + env(safe-area-inset-top,0px)) calc(32px + env(safe-area-inset-bottom,0px));
+  padding-inline:20px;
+  font-variant-numeric:tabular-nums;
+}
+.wrap{max-width:1120px;margin:0 auto;display:grid;gap:28px}
+
+header{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{
+  font-family:"Noto Serif SC","Songti SC","STSong",serif;
+  font-weight:700;font-size:1.5rem;margin:0;letter-spacing:.02em;
+}
+header .hint{color:var(--ink-2);font-size:.9rem}
+
+.calc{
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start;
+}
+@media (max-width:760px){.calc{grid-template-columns:1fr}}
+
+.panel{
+  background:var(--surface);border-radius:14px;box-shadow:var(--shadow);
+  padding:20px 22px;display:grid;gap:18px;align-content:start;
+}
+.row{display:grid;gap:8px}
+.row .label{
+  font-size:.78rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);
+}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+button.opt{
+  appearance:none;border:1.5px solid var(--line);background:var(--surface-2);color:var(--ink);
+  border-radius:10px;min-width:52px;height:48px;padding:0 16px;
+  font:inherit;font-size:1.05rem;font-weight:500;cursor:pointer;
+  transition:background .12s,border-color .12s,transform .06s;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+}
+button.opt:hover{border-color:var(--accent)}
+button.opt:active{transform:scale(.97)}
+button.opt:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button.opt[aria-pressed="true"]{
+  background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600;
+}
+.opts.star button.opt[aria-pressed="true"]{background:var(--star);border-color:var(--star);color:#fff}
+.opts.xp button.opt{min-width:48px;padding:0 10px}
+
+.results{display:grid;gap:14px;align-content:start}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px}
+.card{
+  background:var(--surface);border-radius:14px;box-shadow:var(--shadow);
+  padding:16px 18px 14px;display:grid;gap:2px;min-height:118px;align-content:start;
+}
+.card .to{font-size:.9rem;color:var(--ink-2);font-weight:500}
+.card .cost{
+  font-size:2.6rem;font-weight:600;line-height:1.1;letter-spacing:-.01em;
+}
+.card .cost small{font-size:.95rem;font-weight:500;color:var(--ink-2);margin-left:4px}
+.card .note{font-size:.85rem;color:var(--star);min-height:1.3em}
+.card.zero .cost{color:var(--accent)}
+.card.next{border:1.5px solid var(--accent)}
+.energy{
+  font-size:.88rem;color:var(--ink-2);background:var(--surface-2);border-radius:10px;padding:10px 14px;
+  display:flex;flex-wrap:wrap;gap:6px 16px;
+}
+.energy b{color:var(--ink);font-weight:600}
+.state{font-size:.95rem;color:var(--ink-2)}
+.state b{color:var(--ink);font-weight:600}
+
+.ref{display:grid;gap:22px}
+.ref h2{
+  font-family:"Noto Serif SC","Songti SC","STSong",serif;font-weight:600;font-size:1.15rem;margin:0;
+  padding-top:22px;border-top:1px solid var(--line);
+}
+.ref h3{font-size:.95rem;font-weight:600;margin:0 0 8px;color:var(--ink)}
+.ref ul{margin:0;padding-left:1.2em;color:var(--ink);max-width:68ch}
+.ref li{margin:4px 0}
+.ref p{margin:0;color:var(--ink-2);font-size:.92rem;max-width:68ch}
+.tables{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;font-size:.92rem;white-space:nowrap}
+th,td{padding:6px 10px;text-align:center;border-bottom:1px solid var(--line)}
+th{font-weight:600;color:var(--ink-2);font-size:.82rem;background:var(--surface-2)}
+th:first-child,td:first-child{text-align:left;font-weight:500}
+td.auc{background:var(--accent-soft)}
+td b{font-weight:600}
+tr.mark td:first-child::after{content:" 拍";color:var(--accent);font-size:.78rem;margin-left:2px}
+
+@media (prefers-reduced-motion: reduce){button.opt{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>万象棋升级计算器</h1>
+    <span class="hint">点弈星、等级、经验,下面直接读能量数</span>
+  </header>
+
+  <section class="calc">
+    <div class="panel" id="panel">
+      <div class="row">
+        <div class="label">弈星</div>
+        <div class="opts star" id="starOpts" role="radiogroup" aria-label="弈星"></div>
+      </div>
+      <div class="row">
+        <div class="label">当前等级</div>
+        <div class="opts" id="lvOpts" role="radiogroup" aria-label="当前等级"></div>
+      </div>
+      <div class="row">
+        <div class="label">已攒经验 <span id="xpRange" style="text-transform:none;letter-spacing:0;font-weight:400"></span></div>
+        <div class="opts xp" id="xpOpts" role="radiogroup" aria-label="已攒经验"></div>
+      </div>
+    </div>
+
+    <div class="results">
+      <div class="state" id="state"></div>
+      <div class="cards" id="cards"></div>
+      <div class="energy" id="energy"></div>
+    </div>
+  </section>
+
+  <section class="ref">
+    <h2>规则</h2>
+    <ul>
+      <li>所需经验:1→2 = 7,2→3 = 13,3→4 = 17,4→5 = 23,5→6 = 27</li>
+      <li>每回合 +1,每次拍卖 +2(一拍第 4 回合、二拍第 8、三拍第 12)</li>
+      <li>1 能量 = 1 经验,费用 = 所需 − 已攒,升完归零</li>
+      <li>弈星:每升一级 +2(觉醒 +4),所以连升第二级起少 2(觉醒少 4)</li>
+      <li>每回合能量:1–3 回合 6,4–7 回合 8,8–11 回合 12,12+ 回合 15</li>
+    </ul>
+
+    <h2>单级费用</h2>
+    <p>e = 该级已攒经验。格内 = 升一级要掏的能量。</p>
+    <div class="tbl" id="singleTbl"></div>
+
+    <h2>逐回合费用 <span id="perRoundStar" style="font-weight:400;font-size:.9rem;color:var(--ink-2)"></span></h2>
+    <p>行 = 现在第几回合,列 = 你在哪一回合升到当前级,格内 = 现在掏钱 升一级 / 连升两级 / 连升三级 的能量。拍卖回合标「拍」。</p>
+    <div class="tables" id="perRound"></div>
+  </section>
+</div>
+
+<script>
+(function(){
+  const NEED = {1:7, 2:13, 3:17, 4:23, 5:27};
+  const STARS = [
+    {key:"none",  label:"无",   bonus:0},
+    {key:"has",   label:"有",   bonus:2},
+    {key:"awake", label:"觉醒", bonus:4},
+  ];
+  const AUCTIONS = [4, 8, 12];
+  const ENERGY = [[1,3,6],[4,7,8],[8,11,12],[12,99,15]];
+
+  const state = {star:"none", level:1, xp:0};
+  try{
+    const s = JSON.parse(localStorage.getItem("wxq-calc") || "{}");
+    if (STARS.some(o=>o.key===s.star)) state.star = s.star;
+    if (NEED[s.level]) state.level = s.level;
+    if (Number.isInteger(s.xp)) state.xp = s.xp;
+  }catch(e){}
+  function save(){ try{ localStorage.setItem("wxq-calc", JSON.stringify(state)); }catch(e){} }
+
+  const bonus = () => STARS.find(o=>o.key===state.star).bonus;
+
+  function costTo(level, xp, target, b){
+    let total = Math.max(0, NEED[level] - xp);
+    let saved = 0;
+    for (let lv = level+1; lv < target; lv++){
+      const cut = Math.min(b, NEED[lv]);
+      total += NEED[lv] - cut;
+      saved += cut;
+    }
+    return {total, saved};
+  }
+
+  function energyAt(round){
+    for (const [a,z,v] of ENERGY) if (round>=a && round<=z) return v;
+    return 15;
+  }
+
+  const $ = id => document.getElementById(id);
+
+  function renderOpts(container, items, isOn, onPick){
+    container.innerHTML = "";
+    for (const it of items){
+      const b = document.createElement("button");
+      b.className = "opt";
+      b.type = "button";
+      b.textContent = it.label;
+      b.setAttribute("role","radio");
+      b.setAttribute("aria-pressed", isOn(it) ? "true" : "false");
+      b.setAttribute("aria-checked", isOn(it) ? "true" : "false");
+      b.addEventListener("click", ()=>{ onPick(it); save(); render(); });
+      container.appendChild(b);
+    }
+  }
+
+  function render(){
+    if (state.xp > NEED[state.level]-1) state.xp = NEED[state.level]-1;
+    if (state.xp < 0) state.xp = 0;
+
+    renderOpts($("starOpts"), STARS, o=>o.key===state.star, o=>{ state.star=o.key; });
+    renderOpts($("lvOpts"), [1,2,3,4,5].map(n=>({label:n+" 级", n})), o=>o.n===state.level, o=>{ state.level=o.n; });
+    const xps = []; for (let i=0;i<NEED[state.level];i++) xps.push({label:String(i), n:i});
+    renderOpts($("xpOpts"), xps, o=>o.n===state.xp, o=>{ state.xp=o.n; });
+    $("xpRange").textContent = `(${state.level} 级需 ${NEED[state.level]})`;
+
+    const b = bonus();
+    const starLabel = STARS.find(o=>o.key===state.star).label;
+    $("state").innerHTML = `现在 <b>${state.level} 级</b>,经验 <b>${state.xp} / ${NEED[state.level]}</b>` +
+      (b ? `,弈星 <b>${starLabel}</b>` : "");
+
+    const cards = $("cards"); cards.innerHTML = "";
+    for (let t = state.level+1; t <= 6; t++){
+      const {total, saved} = costTo(state.level, state.xp, t, b);
+      const c = document.createElement("div");
+      c.className = "card" + (total===0 ? " zero" : "") + (t===state.level+1 ? " next" : "");
+      c.innerHTML =
+        `<div class="to">升到 ${t} 级</div>` +
+        `<div class="cost">${total}<small>能量</small></div>` +
+        `<div class="note">${saved ? `(弈星 −${saved})` : ""}</div>`;
+      cards.appendChild(c);
+    }
+
+    $("energy").innerHTML = `<span>回合能量上限</span>` +
+      ENERGY.map(([a,z,v]) => `<span>${z>20 ? a+"+" : a+"–"+z} 回合 <b>${v}</b></span>`).join("");
+
+    renderPerRound(b, starLabel);
+  }
+
+  function renderSingle(){
+    const cols = 12;
+    let h = "<table><thead><tr><th>升级</th>";
+    for (let e=0;e<cols;e++) h += `<th>${e===0?"e=0":e}</th>`;
+    h += "</tr></thead><tbody>";
+    for (let lv=1; lv<=5; lv++){
+      h += `<tr><td>${lv}→${lv+1}</td>`;
+      for (let e=0;e<cols;e++){ const v = NEED[lv]-e; h += `<td>${v>=0?v:""}</td>`; }
+      h += "</tr>";
+    }
+    h += "</tbody></table>";
+    $("singleTbl").innerHTML = h;
+  }
+
+  const PER_ROUND = [
+    {level:1, r0s:[1],        rows:[3,4,5],             chain:2, r0Label:r=>"开局"},
+    {level:2, r0s:[2,3,4,5],  rows:[3,4,5,6,7,8],       chain:2, r0Label:r=>`第 ${r} 回合`},
+    {level:3, r0s:[4,5],      rows:[5,6,7,8,9,10,11],   chain:3, r0Label:r=>`第 ${r} 回合`},
+    {level:4, r0s:[8,9,10],   rows:[9,10,11,12,13],     chain:2, r0Label:r=>`第 ${r} 回合`},
+    {level:5, r0s:[8,9,10,11],rows:[9,10,11,12,13],     chain:1, r0Label:r=>`第 ${r} 回合`},
+  ];
+  const AUC_NAME = {4:"一拍", 8:"二拍", 12:"三拍"};
+
+  function xpAt(level, r0, r, b){
+    const start = level===1 ? 0 : b;
+    let auc = 0; for (const a of AUCTIONS) if (a>r0 && a<=r) auc++;
+    return start + (r - r0) + 2*auc;
+  }
+
+  function renderPerRound(b, starLabel){
+    $("perRoundStar").textContent = `(弈星:${starLabel})`;
+    const wrap = $("perRound"); wrap.innerHTML = "";
+    for (const spec of PER_ROUND){
+      const L = spec.level;
+      const targets = []; for (let k=1;k<=spec.chain && L+k<=6;k++) targets.push(L+k);
+      const title = `${L} 级(` + targets.map(t => t===L+1 ? `升${t}` : `到${t}`).join(" / ") + ")";
+      let h = `<div><h3>${title}</h3><div class="tbl"><table><thead><tr><th>现在回合 ＼ 升到 ${L} 级的回合</th>`;
+      for (const r0 of spec.r0s) h += `<th>${spec.r0Label(r0)}</th>`;
+      h += "</tr></thead><tbody>";
+      for (const r of spec.rows){
+        const auc = AUC_NAME[r];
+        h += `<tr${auc?' class="mark"':''}><td>${r}${auc?" "+auc:""}</td>`;
+        for (const r0 of spec.r0s){
+          if (r <= r0){ h += "<td></td>"; continue; }
+          const xp = Math.min(xpAt(L, r0, r, b), NEED[L]);
+          const cells = targets.map((t,i) => {
+            const v = costTo(L, xp, t, b).total;
+            return i===1 && spec.chain===3 ? `<b>${v}</b>` : String(v);
+          });
+          h += `<td${auc?' class="auc"':''}>${cells.join("/")}</td>`;
+        }
+        h += "</tr>";
+      }
+      h += "</tbody></table></div></div>";
+      wrap.insertAdjacentHTML("beforeend", h);
+    }
+  }
+
+  renderSingle();
+  render();
+})();
+</script>
+</body>
+</html>
