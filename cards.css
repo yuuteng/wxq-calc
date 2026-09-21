@@ -42,7 +42,7 @@
 .card-tab a.on{background-position-y:0;opacity:1}
 .card-tab a:not(.on):hover{opacity:1}
 
-.cards-body{display:grid;grid-template-columns:minmax(0,1fr) 20;gap:1.75em;margin-top:1.125em;align-items:start}
+.cards-body{display:grid;grid-template-columns:minmax(0,1fr) 20em;gap:1.75em;margin-top:1.125em;align-items:start}
 @media (max-width:900px){.cards-body{grid-template-columns:1fr}}
 
 .cards-l-top{
