@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>图标候选</title>
+<style>
+body{margin:0;padding:28px 20px 60px;background:#0f1424;color:#e6ebe8;font:15px/1.5 -apple-system,"PingFang SC",sans-serif}
+h1{font-size:20px;margin:0 0 6px}
+p{color:#9aa8b8;margin:0 0 24px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+.card{background:#171f33;border:1px solid #27324d;border-radius:14px;padding:18px}
+.card h2{font-size:16px;margin:0 0 4px}
+.card small{display:block;color:#8a97b0;margin-bottom:14px;line-height:1.5}
+.row{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.row svg{display:block;border-radius:22%;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.row .s{border-radius:24%}
+.light{background:#f2f4f8;border-radius:10px;padding:10px;display:flex;gap:12px;align-items:center}
+</style></head><body>
+<h1>wxq 图标候选</h1>
+<p>每个方案:主屏幕尺寸 96、书签 40、标签页 20,以及浅色底上的效果。</p>
+<div class="grid" id="g"></div>
+<script>
+const ICONS = {
+  A: {name:"A · 棋",  desc:"沿用现在的字形方案,换成图鉴同款蓝紫底和描金字,右下一枚小金星呼应弈星。",
+    svg:`<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+<defs><linearGradient id="a1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b4f8f"/><stop offset="1" stop-color="#151b3a"/></linearGradient>
+<linearGradient id="a2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe9a8"/><stop offset="1" stop-color="#d9a441"/></linearGradient></defs>
+<rect width="64" height="64" rx="14" fill="url(#a1)"/>
+<text x="31" y="45" font-family="Noto Serif SC,Songti SC,STSong,serif" font-size="36" font-weight="700" fill="url(#a2)" text-anchor="middle">棋</text>
+<path d="M50 44l1.6 3.6 3.6 1.6-3.6 1.6L50 54.4l-1.6-3.6-3.6-1.6 3.6-1.6z" fill="#ffe9a8"/></svg>`},
+  B: {name:"B · 棋子与升级",  desc:"一枚圆形棋子放在六角格上,上方三道金色向上箭羽,表达“棋 + 升级计算”。",
+    svg:`<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+<defs><linearGradient id="b1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2d3f7a"/><stop offset="1" stop-color="#12172f"/></linearGradient>
+<radialGradient id="b2" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#7fd8c3"/><stop offset="1" stop-color="#1f7a68"/></radialGradient></defs>
+<rect width="64" height="64" rx="14" fill="url(#b1)"/>
+<path d="M32 22l13 7.5v15L32 52l-13-7.5v-15z" fill="none" stroke="#5f77c4" stroke-width="2" opacity=".8"/>
+<circle cx="32" cy="37" r="9" fill="url(#b2)" stroke="#e6fff7" stroke-width="1.5"/>
+<path d="M32 8l6 6h-3.5v5h-5v-5H26z" fill="#f0c866"/>
+<path d="M21 14l4 4h-2.4v3h-3.2v-3H17z" fill="#f0c866" opacity=".7"/>
+<path d="M43 14l4 4h-2.4v3h-3.2v-3H39z" fill="#f0c866" opacity=".7"/></svg>`},
+  C: {name:"C · 卡牌图鉴",  desc:"三张错落的卡牌,最前一张亮起金边,直指卡牌图鉴;整体偏深蓝紫,和图鉴区一体。",
+    svg:`<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+<defs><linearGradient id="c1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#33427e"/><stop offset="1" stop-color="#12162e"/></linearGradient>
+<linearGradient id="c2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5a6fbf"/><stop offset="1" stop-color="#2a3566"/></linearGradient>
+<linearGradient id="c3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd98a"/><stop offset="1" stop-color="#c98c2b"/></linearGradient></defs>
+<rect width="64" height="64" rx="14" fill="url(#c1)"/>
+<rect x="14" y="16" width="20" height="28" rx="3" fill="url(#c2)" transform="rotate(-14 24 30)" opacity=".75"/>
+<rect x="22" y="15" width="20" height="28" rx="3" fill="url(#c2)" transform="rotate(-4 32 29)" opacity=".9"/>
+<rect x="30" y="16" width="20" height="28" rx="3" fill="#1b2450" stroke="url(#c3)" stroke-width="2" transform="rotate(8 40 30)"/>
+<circle cx="40" cy="26" r="4" fill="url(#c3)" transform="rotate(8 40 30)"/>
+<rect x="34" y="34" width="12" height="2" rx="1" fill="#e9d8a6" transform="rotate(8 40 30)"/></svg>`},
+  D: {name:"D · 万",  desc:"取「万象」的“万”,一笔粗衬线,金色主字配一颗青色小星点,比“棋”更贴项目名。",
+    svg:`<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+<defs><linearGradient id="d1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3c4d92"/><stop offset="1" stop-color="#10152f"/></linearGradient>
+<linearGradient id="d2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff0bf"/><stop offset="1" stop-color="#d8a13a"/></linearGradient></defs>
+<rect width="64" height="64" rx="14" fill="url(#d1)"/>
+<text x="31" y="47" font-family="Noto Serif SC,Songti SC,STSong,serif" font-size="40" font-weight="700" fill="url(#d2)" text-anchor="middle">万</text>
+<circle cx="49" cy="15" r="3" fill="#7fd8c3"/></svg>`},
+  E: {name:"E · 弈星",  desc:"以弈星为核心:深蓝圆盘上一颗八角金星,外环一圈细描边,像一枚徽章,辨识度最高。",
+    svg:`<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+<defs><radialGradient id="e1" cx=".5" cy=".4" r=".8"><stop offset="0" stop-color="#3a4c90"/><stop offset="1" stop-color="#0f1430"/></radialGradient>
+<linearGradient id="e2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff1c2"/><stop offset="1" stop-color="#d69a2f"/></linearGradient></defs>
+<rect width="64" height="64" rx="14" fill="url(#e1)"/>
+<circle cx="32" cy="32" r="21" fill="none" stroke="#6b7fc9" stroke-width="1.5" opacity=".7"/>
+<path d="M32 12l4.2 12.6L49 29l-12.8 4.4L32 46l-4.2-12.6L15 29l12.8-4.4z" fill="url(#e2)"/>
+<path d="M32 22l2 6 6 2-6 2-2 6-2-6-6-2 6-2z" fill="#1b2450" opacity=".85"/></svg>`},
+};
+const g = document.getElementById("g");
+for (const [k,v] of Object.entries(ICONS)) {
+  const el = document.createElement("div"); el.className = "card";
+  const svg = s => v.svg.replace("<svg ", `<svg width="${s}" height="${s}" `);
+  el.innerHTML = `<h2>${v.name}</h2><small>${v.desc}</small>
+    <div class="row">${svg(96)}${svg(40)}${svg(20)}<div class="light">${svg(40)}${svg(20)}</div></div>`;
+  g.appendChild(el);
+}
+</script></body></html>
