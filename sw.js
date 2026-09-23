@@ -1,4 +1,4 @@
-const VERSION = "v2";
+const VERSION = "v3";
 const STATIC = `wxq-static-${VERSION}`;
 const IMG = `wxq-img-${VERSION}`;
 const DATA = `wxq-data-${VERSION}`;
