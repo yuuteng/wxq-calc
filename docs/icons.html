@@ -62,6 +62,60 @@ const ICONS = {
 <circle cx="32" cy="32" r="21" fill="none" stroke="#6b7fc9" stroke-width="1.5" opacity=".7"/>
 <path d="M32 12l4.2 12.6L49 29l-12.8 4.4L32 46l-4.2-12.6L15 29l12.8-4.4z" fill="url(#e2)"/>
 <path d="M32 22l2 6 6 2-6 2-2 6-2-6-6-2 6-2z" fill="#1b2450" opacity=".85"/></svg>`},
+  C1: {name:"C1 · 三卡 + 金星",  desc:"C 的骨架,前卡去掉圆头像,改成一颗八角金星,把弈星元素带进来。",
+    svg:`<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+<defs><linearGradient id="c11" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#33427e"/><stop offset="1" stop-color="#12162e"/></linearGradient>
+<linearGradient id="c12" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5a6fbf"/><stop offset="1" stop-color="#2a3566"/></linearGradient>
+<linearGradient id="c13" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd98a"/><stop offset="1" stop-color="#c98c2b"/></linearGradient></defs>
+<rect width="64" height="64" rx="14" fill="url(#c11)"/>
+<rect x="14" y="16" width="20" height="28" rx="3" fill="url(#c12)" transform="rotate(-14 24 30)" opacity=".75"/>
+<rect x="22" y="15" width="20" height="28" rx="3" fill="url(#c12)" transform="rotate(-4 32 29)" opacity=".9"/>
+<rect x="30" y="16" width="20" height="28" rx="3" fill="#1b2450" stroke="url(#c13)" stroke-width="2" transform="rotate(8 40 30)"/>
+<path d="M40 21l2.2 6.3 6.3 2.2-6.3 2.2L40 38l-2.2-6.3-6.3-2.2 6.3-2.2z" fill="url(#c13)" transform="rotate(8 40 30)"/></svg>`},
+  C2: {name:"C2 · 单卡 + 万",  desc:"只留一张竖卡,卡面居中一个衬线“万”,底部一条细金线,像图鉴里的整卡图。",
+    svg:`<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+<defs><linearGradient id="c21" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#33427e"/><stop offset="1" stop-color="#12162e"/></linearGradient>
+<linearGradient id="c22" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a3a78"/><stop offset="1" stop-color="#141b3d"/></linearGradient>
+<linearGradient id="c23" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe6a6"/><stop offset="1" stop-color="#d09a33"/></linearGradient></defs>
+<rect width="64" height="64" rx="14" fill="url(#c21)"/>
+<rect x="19" y="10" width="26" height="40" rx="3.5" fill="url(#c22)" stroke="url(#c23)" stroke-width="1.8"/>
+<text x="32" y="36" font-family="Noto Serif SC,Songti SC,STSong,serif" font-size="20" font-weight="700" fill="url(#c23)" text-anchor="middle">万</text>
+<rect x="24" y="42" width="16" height="1.6" rx=".8" fill="url(#c23)" opacity=".8"/>
+<rect x="19" y="52" width="26" height="2" rx="1" fill="url(#c23)" opacity=".35"/></svg>`},
+  C3: {name:"C3 · 双卡 + 升级箭",  desc:"两张卡叠放,右上角一个金色向上箭头,把“查卡 + 算升级”两件事都放进去。",
+    svg:`<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+<defs><linearGradient id="c31" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#33427e"/><stop offset="1" stop-color="#12162e"/></linearGradient>
+<linearGradient id="c32" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5a6fbf"/><stop offset="1" stop-color="#2a3566"/></linearGradient>
+<linearGradient id="c33" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd98a"/><stop offset="1" stop-color="#c98c2b"/></linearGradient></defs>
+<rect width="64" height="64" rx="14" fill="url(#c31)"/>
+<rect x="13" y="20" width="22" height="30" rx="3" fill="url(#c32)" transform="rotate(-10 24 35)" opacity=".8"/>
+<rect x="22" y="18" width="22" height="30" rx="3" fill="#1b2450" stroke="url(#c33)" stroke-width="2" transform="rotate(4 33 33)"/>
+<circle cx="33" cy="30" r="4.5" fill="url(#c32)" transform="rotate(4 33 33)"/>
+<rect x="27" y="38" width="12" height="2" rx="1" fill="#c9d3ff" opacity=".7" transform="rotate(4 33 33)"/>
+<path d="M50 8l7 8h-4.5v8h-5v-8H43z" fill="url(#c33)"/></svg>`},
+  C4: {name:"C4 · 扇形三卡",  desc:"三张卡从底部一点扇开,像手牌;三张同色,只有边框亮度不同,最克制。",
+    svg:`<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+<defs><linearGradient id="c41" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#33427e"/><stop offset="1" stop-color="#12162e"/></linearGradient>
+<linearGradient id="c42" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#26315f"/><stop offset="1" stop-color="#151b3a"/></linearGradient>
+<linearGradient id="c43" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe6a6"/><stop offset="1" stop-color="#d09a33"/></linearGradient></defs>
+<rect width="64" height="64" rx="14" fill="url(#c41)"/>
+<g transform="translate(32 54)">
+<rect x="-9" y="-40" width="18" height="30" rx="2.5" fill="url(#c42)" stroke="#6d80c9" stroke-width="1.2" transform="rotate(-22)"/>
+<rect x="-9" y="-40" width="18" height="30" rx="2.5" fill="url(#c42)" stroke="#8ea0e0" stroke-width="1.2" transform="rotate(22)"/>
+<rect x="-9" y="-43" width="18" height="30" rx="2.5" fill="#1b2450" stroke="url(#c43)" stroke-width="1.8"/>
+<circle cx="0" cy="-32" r="3.5" fill="url(#c43)"/>
+</g></svg>`},
+  C5: {name:"C5 · 卡片书",  desc:"一本翻开的宝典,右页压着一张金边卡牌,直接对应“宝典”这个名字。",
+    svg:`<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+<defs><linearGradient id="c51" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#33427e"/><stop offset="1" stop-color="#12162e"/></linearGradient>
+<linearGradient id="c52" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5a6fbf"/><stop offset="1" stop-color="#2a3566"/></linearGradient>
+<linearGradient id="c53" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd98a"/><stop offset="1" stop-color="#c98c2b"/></linearGradient></defs>
+<rect width="64" height="64" rx="14" fill="url(#c51)"/>
+<path d="M12 20q10-4 20 0v26q-10-4-20 0z" fill="url(#c52)" opacity=".85"/>
+<path d="M32 20q10-4 20 0v26q-10-4-20 0z" fill="url(#c52)" opacity=".6"/>
+<path d="M32 20v26" stroke="#0f1430" stroke-width="1.5"/>
+<rect x="35" y="15" width="15" height="21" rx="2" fill="#1b2450" stroke="url(#c53)" stroke-width="1.6" transform="rotate(10 42 25)"/>
+<circle cx="42.5" cy="22" r="2.6" fill="url(#c53)" transform="rotate(10 42 25)"/></svg>`},
 };
 const g = document.getElementById("g");
 for (const [k,v] of Object.entries(ICONS)) {

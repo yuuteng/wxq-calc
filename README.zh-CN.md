@@ -1,10 +1,10 @@
-# wxq-calc
+# 万象宝典 · wxq-codex
 
 [English](README.md)
 
 王者万象棋的边打边查页面:上面是升级费用计算器,下面是卡牌图鉴和棋手图鉴,一页放下,iPad 上开着就能用。
 
-线上地址:https://yuuteng.github.io/wxq-calc/
+线上地址:https://yuuteng.github.io/wxq-codex/
 
 ![计算器](docs/screenshot.jpg)
 

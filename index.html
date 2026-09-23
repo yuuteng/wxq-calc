@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>万象棋升级计算器</title>
+<title>万象宝典</title>
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="万象棋">
+<meta name="apple-mobile-web-app-title" content="万象宝典">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Serif+SC:wght@600;700&display=swap">
 <link rel="stylesheet" href="cards.css">
@@ -16,40 +16,25 @@
 @font-face{font-family:"HYQiHei";src:url(fonts/HYQiHei-60S.ttf) format("truetype");font-weight:400;font-display:swap}
 @font-face{font-family:"HYQiHei";src:url(fonts/HYQiHei-75W.otf) format("opentype");font-weight:700;font-display:swap}
 :root{
-  color-scheme:light dark;
-  --bg:#EEF1EC;
-  --surface:#FFFFFF;
-  --surface-2:#E3E8E1;
-  --ink:#1B2320;
-  --ink-2:#5A665F;
-  --line:#CCD4CB;
-  --accent:#2E7D6B;
-  --accent-ink:#FFFFFF;
-  --accent-soft:#D6EBE4;
-  --star:#B7791F;
-  --star-soft:#F6E9CF;
-  --shadow:0 1px 2px rgba(27,35,32,.08),0 6px 20px rgba(27,35,32,.06);
-}
-@media (prefers-color-scheme: dark){
-  :root{
-    --bg:#141A18;
-    --surface:#1E2624;
-    --surface-2:#273130;
-    --ink:#E6EBE8;
-    --ink-2:#9AA8A1;
-    --line:#354140;
-    --accent:#4FB39B;
-    --accent-ink:#0F1A17;
-    --accent-soft:#1F3D36;
-    --star:#E0A83A;
-    --star-soft:#3D3320;
-    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.3);
-  }
+  color-scheme:dark;
+  --bg:#0f1528;
+  --surface:rgba(22,30,58,.78);
+  --surface-2:rgba(48,60,104,.55);
+  --ink:#e8ecf6;
+  --ink-2:#a3adc9;
+  --line:rgba(160,180,255,.18);
+  --accent:#5fc7ad;
+  --accent-ink:#0d1a17;
+  --accent-soft:rgba(95,199,173,.18);
+  --star:#e0a83a;
+  --star-soft:rgba(224,168,58,.2);
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 10px 30px rgba(0,0,0,.35);
 }
 *{box-sizing:border-box}
 html,body{margin:0}
 body{
-  background:var(--bg);
+  background:var(--bg) linear-gradient(180deg,rgba(10,14,32,.55),rgba(10,14,32,.8)) ,url(img/card/care_bg.jpg) center/cover no-repeat fixed;
+  background:linear-gradient(180deg,rgba(10,14,32,.55),rgba(10,14,32,.82)),var(--bg) url(img/card/care_bg.jpg) center top/cover no-repeat fixed;
   color:var(--ink);
   font-family:"IBM Plex Sans",-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
   font-size:16px;
@@ -67,7 +52,8 @@ h1{
   font-weight:700;font-size:1.5rem;margin:0;letter-spacing:.02em;
 }
 .topnav{display:flex;gap:18px;font-size:.92rem}
-.topnav a{color:var(--ink-2);text-decoration:none;border-bottom:1px solid transparent}
+.topnav a{color:var(--ink-2);text-decoration:none;border-bottom:1px solid transparent;text-shadow:0 1px 8px rgba(0,0,0,.5)}
+h1{text-shadow:0 2px 14px rgba(0,0,0,.55)}
 .topnav a:hover{color:var(--accent);border-color:var(--accent)}
 html{scroll-behavior:smooth}
 
@@ -77,7 +63,8 @@ html{scroll-behavior:smooth}
 @media (max-width:760px){.calc{grid-template-columns:1fr}}
 
 .panel{
-  background:var(--surface);border-radius:14px;box-shadow:var(--shadow);
+  background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
   padding:20px 22px;display:grid;gap:18px;align-content:start;
 }
 .row{display:grid;gap:8px}
@@ -104,7 +91,8 @@ button.opt[aria-pressed="true"]{
 .results{display:grid;gap:14px;align-content:start}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px}
 .card{
-  background:var(--surface);border-radius:14px;box-shadow:var(--shadow);
+  background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
   padding:16px 18px 14px;display:grid;gap:2px;min-height:118px;align-content:start;
 }
 .card .to{font-size:.9rem;color:var(--ink-2);font-weight:500}
@@ -114,20 +102,23 @@ button.opt[aria-pressed="true"]{
 .card .cost small{font-size:.95rem;font-weight:500;color:var(--ink-2);margin-left:4px}
 .card .note{font-size:.85rem;color:var(--star);min-height:1.3em}
 .card.zero .cost{color:var(--accent)}
-.card.next{border:1.5px solid var(--accent)}
+.card.next{border-color:var(--accent);box-shadow:var(--shadow),0 0 0 1px var(--accent) inset}
 .energy{
-  font-size:.88rem;color:var(--ink-2);background:var(--surface-2);border-radius:10px;padding:10px 14px;
+  font-size:.88rem;color:var(--ink-2);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
   display:flex;flex-wrap:wrap;gap:6px 16px;
 }
 .energy b{color:var(--ink);font-weight:600}
 .state{font-size:.95rem;color:var(--ink-2)}
 .state b{color:var(--ink);font-weight:600}
 
-.ref{display:grid;gap:22px}
+.ref{display:grid;gap:22px;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:8px 24px 26px}
 .ref h2{
   font-family:"Noto Serif SC","Songti SC","STSong",serif;font-weight:600;font-size:1.15rem;margin:0;
   padding-top:22px;border-top:1px solid var(--line);
 }
+.ref h2:first-child{border-top:0;padding-top:16px}
 .ref h3{font-size:.95rem;font-weight:600;margin:0 0 8px;color:var(--ink)}
 .ref ul{margin:0;padding-left:1.2em;color:var(--ink);max-width:68ch}
 .ref li{margin:4px 0}
@@ -136,19 +127,20 @@ button.opt[aria-pressed="true"]{
 .tbl{overflow-x:auto}
 table{border-collapse:collapse;font-size:.92rem;white-space:nowrap}
 th,td{padding:6px 10px;text-align:center;border-bottom:1px solid var(--line)}
-th{font-weight:600;color:var(--ink-2);font-size:.82rem;background:var(--surface-2)}
+th{font-weight:600;color:var(--ink-2);font-size:.82rem;background:rgba(48,60,104,.45)}
 th:first-child,td:first-child{text-align:left;font-weight:500}
 td.auc{background:var(--accent-soft)}
 td b{font-weight:600}
 tr.mark td:first-child::after{content:" 拍";color:var(--accent);font-size:.78rem;margin-left:2px}
 
 @media (prefers-reduced-motion: reduce){button.opt{transition:none}}
+@media (max-width:760px){body{background-attachment:scroll;background-size:auto 140vh}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <h1>万象棋升级计算器</h1>
+    <h1>万象宝典</h1>
     <nav class="topnav"><a href="#calc">计算器</a><a href="#gallery">卡牌图鉴</a><a href="#roles">棋手</a><a href="#rules">规则</a></nav>
   </header>
 

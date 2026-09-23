@@ -1,10 +1,10 @@
-# wxq-calc
+# 万象宝典 · wxq-codex
 
 [中文说明](README.zh-CN.md)
 
 Companion page for 王者万象棋 (Honor of Kings auto chess): an upgrade cost calculator on top, the card compendium and the lord roster below, all on one page that works on an iPad next to the game.
 
-Live: https://yuuteng.github.io/wxq-calc/
+Live: https://yuuteng.github.io/wxq-codex/
 
 ![Calculator](docs/screenshot.jpg)
 

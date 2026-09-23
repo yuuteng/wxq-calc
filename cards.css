@@ -14,7 +14,13 @@
 
 .cards-head{display:grid;grid-template-columns:minmax(0,1fr) 20em;gap:1.75em;align-items:end}
 .cards-head-l{display:flex;align-items:flex-end;justify-content:space-between;gap:1em;flex-wrap:wrap}
-@media (max-width:900px){.cards-head{grid-template-columns:1fr}.cards-head-l{justify-content:center}}
+@media (max-width:1180px){
+  .cards-head{grid-template-columns:minmax(0,1fr) 16em;grid-auto-flow:row dense;align-items:center;row-gap:0.9em}
+  .cards-head-l{display:contents}
+  .card-tab{grid-column:1/-1;justify-content:center}
+  .cards-search{align-self:center;margin-bottom:0}
+}
+@media (max-width:900px){.cards-head{grid-template-columns:1fr}.cards-search{width:100%}}
 .cards-title{line-height:1}
 .cards-title b{
   font-family:"Noto Serif SC","Songti SC",serif;font-weight:700;font-size:2.125em;color:#fff;
