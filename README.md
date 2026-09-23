@@ -10,7 +10,7 @@ Live: https://yuuteng.github.io/wxq-codex/
 
 ## Calculator
 
-Pick three things with buttons: whether you hold 弈星 (none / normal / awakened), your current level, and the XP already banked. The page shows the energy needed to reach every higher level, with the 弈星 discount on chained upgrades shown in brackets. The XP model comes from my own notes; the rules and the derived cost tables are printed at the bottom of the page.
+Pick three things with buttons: whether you hold 弈星 (none / normal / awakened), your current level, and the upgrade cost the game shows on its button. The page turns that into the energy needed to chain up to every higher level, with the 弈星 discount shown in brackets. The XP model comes from my own notes; the rules and the derived cost tables are printed at the bottom of the page.
 
 ## Card compendium
 
