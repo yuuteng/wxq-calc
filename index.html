@@ -104,6 +104,8 @@ button.opt[aria-pressed="true"]{
 .card .note{font-size:.85rem;color:var(--star);min-height:1.3em}
 .card.zero .cost{color:var(--accent)}
 .card.next{border-color:var(--accent);box-shadow:var(--shadow),0 0 0 1px var(--accent) inset}
+.card.given{opacity:.72}
+.card.given .cost{font-size:2rem}
 .energy{
   font-size:.88rem;color:var(--ink-2);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px;
   backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
@@ -156,8 +158,8 @@ tr.mark td:first-child::after{content:" 拍";color:var(--accent);font-size:.78re
         <div class="opts" id="lvOpts" role="radiogroup" aria-label="当前等级"></div>
       </div>
       <div class="row">
-        <div class="label">已攒经验 <span id="xpRange" style="text-transform:none;letter-spacing:0;font-weight:400"></span></div>
-        <div class="opts xp" id="xpOpts" role="radiogroup" aria-label="已攒经验"></div>
+        <div class="label">升下一级要多少能量 <span id="xpRange" style="text-transform:none;letter-spacing:0;font-weight:400">(游戏里升级按钮上的数)</span></div>
+        <div class="opts xp" id="xpOpts" role="radiogroup" aria-label="升下一级要多少能量"></div>
       </div>
     </div>
 
@@ -182,10 +184,6 @@ tr.mark td:first-child::after{content:" 拍";color:var(--accent);font-size:.78re
       <li>每回合能量:1–3 回合 6,4–7 回合 8,8–11 回合 12,12+ 回合 15</li>
     </ul>
 
-    <h2>单级费用</h2>
-    <p>e = 该级已攒经验。格内 = 升一级要掏的能量。</p>
-    <div class="tbl" id="singleTbl"></div>
-
     <h2>逐回合费用 <span id="perRoundStar" style="font-weight:400;font-size:.9rem;color:var(--ink-2)"></span></h2>
     <p>行 = 现在第几回合,列 = 你在哪一回合升到当前级,格内 = 现在掏钱 升一级 / 连升两级 / 连升三级 的能量。拍卖回合标「拍」。</p>
     <div class="tables" id="perRound"></div>
@@ -203,12 +201,13 @@ tr.mark td:first-child::after{content:" 拍";color:var(--accent);font-size:.78re
   const AUCTIONS = [4, 8, 12];
   const ENERGY = [[1,3,6],[4,7,8],[8,11,12],[12,99,15]];
 
-  const state = {star:"none", level:1, xp:0};
+  const state = {star:"none", level:1, cost:NEED[1]};
   try{
     const s = JSON.parse(localStorage.getItem("wxq-calc") || "{}");
     if (STARS.some(o=>o.key===s.star)) state.star = s.star;
     if (NEED[s.level]) state.level = s.level;
-    if (Number.isInteger(s.xp)) state.xp = s.xp;
+    if (Number.isInteger(s.cost)) state.cost = s.cost;
+    else if (Number.isInteger(s.xp)) state.cost = NEED[state.level] - s.xp;
   }catch(e){}
   function save(){ try{ localStorage.setItem("wxq-calc", JSON.stringify(state)); }catch(e){} }
 
@@ -248,27 +247,27 @@ tr.mark td:first-child::after{content:" 拍";color:var(--accent);font-size:.78re
   }
 
   function render(){
-    if (state.xp > NEED[state.level]-1) state.xp = NEED[state.level]-1;
-    if (state.xp < 0) state.xp = 0;
+    if (state.cost > NEED[state.level]) state.cost = NEED[state.level];
+    if (state.cost < 1) state.cost = 1;
+    const xp = NEED[state.level] - state.cost;
 
     renderOpts($("starOpts"), STARS, o=>o.key===state.star, o=>{ state.star=o.key; });
     renderOpts($("lvOpts"), [1,2,3,4,5].map(n=>({label:n+" 级", n})), o=>o.n===state.level, o=>{ state.level=o.n; });
-    const xps = []; for (let i=0;i<NEED[state.level];i++) xps.push({label:String(i), n:i});
-    renderOpts($("xpOpts"), xps, o=>o.n===state.xp, o=>{ state.xp=o.n; });
-    $("xpRange").textContent = `(${state.level} 级需 ${NEED[state.level]})`;
+    const costs = []; for (let i=1;i<=NEED[state.level];i++) costs.push({label:String(i), n:i});
+    renderOpts($("xpOpts"), costs, o=>o.n===state.cost, o=>{ state.cost=o.n; });
 
     const b = bonus();
     const starLabel = STARS.find(o=>o.key===state.star).label;
-    $("state").innerHTML = `现在 <b>${state.level} 级</b>,经验 <b>${state.xp} / ${NEED[state.level]}</b>` +
-      (b ? `,弈星 <b>${starLabel}</b>` : "");
+    $("state").innerHTML = `现在 <b>${state.level} 级</b>,升 ${state.level+1} 级要 <b>${state.cost}</b>` +
+      `<span style="color:var(--ink-2)">(已攒 ${xp}/${NEED[state.level]})</span>` + (b ? `,弈星 <b>${starLabel}</b>` : "");
 
     const cards = $("cards"); cards.innerHTML = "";
     for (let t = state.level+1; t <= 6; t++){
-      const {total, saved} = costTo(state.level, state.xp, t, b);
+      const {total, saved} = costTo(state.level, xp, t, b);
       const c = document.createElement("div");
-      c.className = "card" + (total===0 ? " zero" : "") + (t===state.level+1 ? " next" : "");
+      c.className = "card" + (t===state.level+1 ? " given" : (t===state.level+2 ? " next" : ""));
       c.innerHTML =
-        `<div class="to">升到 ${t} 级</div>` +
+        `<div class="to">${t===state.level+1 ? "升到 "+t+" 级(游戏已显示)" : "连升到 "+t+" 级"}</div>` +
         `<div class="cost">${total}<small>能量</small></div>` +
         `<div class="note">${saved ? `(弈星 −${saved})` : ""}</div>`;
       cards.appendChild(c);
@@ -278,20 +277,6 @@ tr.mark td:first-child::after{content:" 拍";color:var(--accent);font-size:.78re
       ENERGY.map(([a,z,v]) => `<span>${z>20 ? a+"+" : a+"–"+z} 回合 <b>${v}</b></span>`).join("");
 
     renderPerRound(b, starLabel);
-  }
-
-  function renderSingle(){
-    const cols = 16;
-    let h = "<table><thead><tr><th>升级</th>";
-    for (let e=0;e<cols;e++) h += `<th>${e===0?"e=0":e}</th>`;
-    h += "</tr></thead><tbody>";
-    for (let lv=1; lv<=5; lv++){
-      h += `<tr><td>${lv}→${lv+1}</td>`;
-      for (let e=0;e<cols;e++){ const v = NEED[lv]-e; h += `<td>${v>=0?v:""}</td>`; }
-      h += "</tr>";
-    }
-    h += "</tbody></table>";
-    $("singleTbl").innerHTML = h;
   }
 
   const PER_ROUND = [
@@ -338,7 +323,6 @@ tr.mark td:first-child::after{content:" 拍";color:var(--accent);font-size:.78re
     }
   }
 
-  renderSingle();
   render();
 })();
 </script>
